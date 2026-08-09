@@ -1,0 +1,16 @@
+{
+  "name": "Easy English — Elite Pro",
+  "short_name": "Easy English",
+  "description": "1 oyda lug'at, reading, writing va speaking'ni o'rganish uchun ilova",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F4F7FC",
+  "theme_color": "#6366F1",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

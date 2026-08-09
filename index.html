@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+    <title>Easy English — Elite Pro UI</title>
+    <meta name="theme-color" content="#6366F1">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="apple-touch-icon" href="icon-512.png">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* ================= ELITE DESIGN TOKENS ================= */
+        :root {
+            --ee-bg1: #F4F7FC;
+            --ee-bg2: #E9EEF6;
+            --ee-text: #0B132B;
+            --ee-text-soft: #64748B;
+            --ee-card: rgba(255, 255, 255, 0.75);
+            --ee-card-border: rgba(255, 255, 255, 0.9);
+            --ee-nav-bg: rgba(255, 255, 255, 0.8);
+            --ee-input-bg: rgba(255,255,255,0.6);
+
+            --ee-hero-bg: linear-gradient(135deg, #3B82F6 0%, #6366F1 50%, #EC4899 100%);
+            --ee-vocab-col: #8B5CF6;
+            --ee-read-col: #3B82F6;
+            --ee-speak-col: #F97316;
+            --ee-write-col: #EC4899;
+            --ee-add-col: #10B981;
+            --ee-game-col: #F59E0B;
+
+            --ee-blob-op: 0.5;
+            --ee-card-shadow: 0 12px 40px -10px rgba(99, 102, 241, 0.08);
+        }
+
+        [data-theme="dark"] {
+            --ee-bg1: #090A0F;
+            --ee-bg2: #121520;
+            --ee-text: #F8FAFC;
+            --ee-text-soft: #94A3B8;
+            --ee-card: rgba(18, 22, 35, 0.75);
+            --ee-card-border: rgba(255, 255, 255, 0.06);
+            --ee-nav-bg: rgba(18, 22, 35, 0.85);
+            --ee-input-bg: rgba(255,255,255,0.05);
+
+            --ee-hero-bg: linear-gradient(135deg, #1E1B4B 0%, #311039 50%, #1E293B 100%);
+            --ee-vocab-col: #A78BFA;
+            --ee-read-col: #60A5FA;
+            --ee-speak-col: #FB923C;
+            --ee-write-col: #F472B6;
+            --ee-add-col: #34D399;
+            --ee-game-col: #FBBF24;
+
+            --ee-blob-op: 0.25;
+            --ee-card-shadow: 0 12px 40px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, var(--ee-bg1) 0%, var(--ee-bg2) 100%);
+            color: var(--ee-text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            overflow-x: hidden;
+            transition: background 0.5s ease, color 0.5s ease;
+        }
+
+        .ee-display { font-family: 'Outfit', sans-serif; }
+        button, input, textarea, select { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        /* SPLASH SCREEN */
+        #splash-screen {
+            position: fixed; inset: 0; z-index: 9999;
+            background: var(--ee-bg1);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s;
+        }
+        .splash-logo {
+            font-size: 38px; font-weight: 800; background: linear-gradient(135deg, #3B82F6, #EC4899);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 20px; letter-spacing: -0.5px;
+            animation: floatLogo 2s ease-in-out infinite alternate;
+        }
+        @keyframes floatLogo {
+            0% { transform: translateY(0); filter: drop-shadow(0 5px 15px rgba(99,102,241,0.2)); }
+            100% { transform: translateY(-8px); filter: drop-shadow(0 15px 25px rgba(99,102,241,0.4)); }
+        }
+        .progress-container {
+            width: 240px; height: 8px; background: rgba(99, 102, 241, 0.1);
+            border-radius: 20px; overflow: hidden; border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        #splash-progress {
+            width: 0%; height: 100%; background: linear-gradient(135deg, #3B82F6, #EC4899);
+            border-radius: 20px; transition: width 0.1s linear;
+        }
+
+        /* BACKDROP BLOBS */
+        .backdrop { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: var(--ee-blob-op); transition: background 0.5s; }
+        .blob-1 { width: 450px; height: 450px; top: -10%; left: -10%; background: #6366F1; animation: drift-1 14s infinite alternate; }
+        .blob-2 { width: 450px; height: 450px; bottom: -10%; right: -10%; background: #EC4899; animation: drift-2 18s infinite alternate; }
+        .blob-3 { width: 380px; height: 380px; top: 40%; right: -15%; background: #10B981; animation: drift-1 16s infinite alternate; }
+        @keyframes drift-1 { 0%{transform:translate(0,0) scale(1);} 100%{transform:translate(40px, -40px) scale(1.15);} }
+        @keyframes drift-2 { 0%{transform:translate(0,0) scale(1);} 100%{transform:translate(-40px, 40px) scale(1.2);} }
+
+        /* APP CONTAINER */
+        .app-container { width: 100%; max-width: 480px; min-height: 100vh; position: relative; padding-bottom: 130px; }
+
+        /* GLASS CARDS */
+        .glass-card {
+            background: var(--ee-card);
+            border: 1px solid var(--ee-card-border);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            box-shadow: var(--ee-card-shadow);
+            border-radius: 26px; padding: 22px; cursor: pointer;
+            position: relative; overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, background 0.4s, border-color 0.4s;
+        }
+        .glass-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            opacity: 0.7;
+        }
+        .glass-card:hover { transform: translateY(-3px) scale(1.01); }
+        .glass-card:active { transform: scale(0.97); }
+        .glass-card.no-hover:hover { transform: none; }
+        .glass-card.static { cursor: default; }
+
+        /* TOP BAR */
+        .top-bar {
+            position: sticky; top: 0; z-index: 30;
+            background: var(--ee-nav-bg);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border-bottom: 1px solid var(--ee-card-border);
+            padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;
+            transition: background 0.4s, border-color 0.4s;
+        }
+        .icon-btn {
+            background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.15);
+            width: 42px; height: 42px; border-radius: 14px; cursor: pointer; color: var(--ee-text);
+            display: flex; align-items: center; justify-content: center; transition: all 0.25s ease;
+        }
+        .icon-btn:hover { background: rgba(99, 102, 241, 0.2); transform: scale(1.05); }
+        .icon-btn:active { transform: scale(0.92); }
+
+        /* TABS */
+        .content-tab { display: none; padding: 24px; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .content-tab.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+        .back-link { display: inline-flex; align-items: center; gap: 4px; background: none; border: none; color: #6366F1; font-weight: 700; font-size: 14px; cursor: pointer; margin-bottom: 16px; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        /* BOTTOM NAV */
+        .bottom-nav {
+            position: fixed; bottom: 16px; left: 12px; right: 12px; max-width: 456px; margin: 0 auto; z-index: 30;
+            background: var(--ee-nav-bg);
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--ee-card-border); border-radius: 30px;
+            display: flex; justify-content: space-around; align-items: center; padding: 8px 4px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+            transition: background 0.4s, border-color 0.4s;
+        }
+        .nav-item {
+            background: none; border: none; display: flex; flex-direction: column; align-items: center;
+            cursor: pointer; padding: 5px 2px; position: relative; z-index: 2; flex: 1;
+            color: var(--ee-text-soft); font-size: 9.5px; font-weight: 600; transition: color 0.3s ease;
+        }
+        .nav-icon-wrap {
+            width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 2px; background: transparent;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .nav-item i { color: var(--ee-text-soft); transition: color 0.3s; }
+        .nav-item span { color: var(--ee-text-soft); transition: color 0.3s; }
+        .nav-item.active span { color: var(--ee-text); }
+        .nav-item.active.home-nav .nav-icon-wrap { background: rgba(99, 102, 241, 0.15); }
+        .nav-item.active.home-nav i { color: #6366F1; }
+        .nav-item.active.vocab-nav .nav-icon-wrap { background: rgba(139, 92, 246, 0.15); }
+        .nav-item.active.vocab-nav i { color: var(--ee-vocab-col); }
+        .nav-item.active.read-nav .nav-icon-wrap { background: rgba(59, 130, 246, 0.15); }
+        .nav-item.active.read-nav i { color: var(--ee-read-col); }
+        .nav-item.active.speak-nav .nav-icon-wrap { background: rgba(249, 115, 22, 0.15); }
+        .nav-item.active.speak-nav i { color: var(--ee-speak-col); }
+        .nav-item.active.write-nav .nav-icon-wrap { background: rgba(236, 72, 153, 0.15); }
+        .nav-item.active.write-nav i { color: var(--ee-write-col); }
+        .nav-item.active.add-nav .nav-icon-wrap { background: rgba(16, 185, 129, 0.15); }
+        .nav-item.active.add-nav i { color: var(--ee-add-col); }
+        .nav-item.active .nav-icon-wrap { transform: translateY(-3px) scale(1.08); }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(3, 7, 18, 0.7); backdrop-filter: blur(20px);
+            z-index: 50; display: none; align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal-overlay.open { display: flex; animation: fadeIn 0.3s; }
+        .modal-card { width: 100%; max-width: 340px; text-align: center; position: relative; }
+
+        .circle-progress { width: 110px; height: 110px; margin: 24px auto; position: relative; display: flex; align-items: center; justify-content: center; }
+        .circle-progress svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .circle-progress circle { fill: none; stroke-width: 8; stroke-linecap: round; }
+        .circle-progress .circle-bg { stroke: rgba(150,150,150,0.2); }
+        .circle-progress .circle-bar { stroke: #6366F1; stroke-dasharray: 264; stroke-dashoffset: 264; transition: stroke-dashoffset 0.2s linear; }
+
+        .topic-badge {
+            font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 10px;
+            display: inline-flex; align-items: center; gap: 4px;
+        }
+
+        /* FLASHCARDS */
+        .flip-card { perspective: 1200px; height: 128px; }
+        .flip-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(.4,.2,.2,1); transform-style: preserve-3d; cursor: pointer; }
+        .flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+        .flip-face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 20px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 10px; font-weight: 700; font-size: 15px; text-transform: capitalize; }
+        .flip-back { transform: rotateY(180deg); color: white; flex-direction: column; gap: 4px; }
+
+        /* GAP-FILL INPUT */
+        .gap-input {
+            width: 88px; text-align: center; font-weight: 700; border-radius: 8px; padding: 3px 4px;
+            font-size: 12.5px; border: 1.5px solid #8B5CF6; outline: none; margin: 0 2px;
+            background: var(--ee-input-bg); color: var(--ee-text);
+        }
+        .gap-input.correct { border-color: #10B981; background: rgba(16,185,129,0.12); }
+        .gap-input.wrong { border-color: #EF4444; background: rgba(239,68,68,0.12); }
+
+        /* MATCH */
+        .match-item, .match-option { transition: all 0.25s ease; }
+
+        /* STARS */
+        .star-btn { background: none; border: none; cursor: pointer; padding: 2px; }
+
+        /* FORMS */
+        .ee-input, .ee-textarea {
+            width: 100%; padding: 11px 14px; border-radius: 14px; border: 1px solid var(--ee-card-border);
+            background: var(--ee-input-bg); font-size: 13.5px; color: var(--ee-text); outline: none;
+            transition: border-color 0.2s ease;
+        }
+        .ee-input:focus, .ee-textarea:focus { border-color: #6366F1; }
+        .ee-textarea { resize: vertical; min-height: 110px; }
+
+        .type-chip { font-size: 12px; font-weight: 700; padding: 7px 14px; border-radius: 999px; border: none; cursor: pointer; }
+
+        /* MEMORY GAME */
+        .memory-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .memory-card { aspect-ratio: 1/1; border-radius: 16px; cursor: pointer; }
+
+        /* TOAST */
+        .toast {
+            position: fixed; bottom: 105px; left: 50%; transform: translateX(-50%) translateY(10px);
+            background: var(--ee-text); color: var(--ee-bg1); padding: 11px 20px; border-radius: 14px;
+            font-size: 12.5px; font-weight: 700; z-index: 100; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease; white-space: nowrap;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        ::selection { background: rgba(99,102,241,0.25); }
+    </style>
+</head>
+<body>
+
+    <!-- SPLASH SCREEN -->
+    <div id="splash-screen">
+        <h1 class="ee-display splash-logo">Easy English</h1>
+        <div class="progress-container">
+            <div id="splash-progress"></div>
+        </div>
+        <p id="splash-text" class="ee-display" style="margin-top: 14px; font-size: 13px; font-weight: 700; color: #6366F1;">0%</p>
+    </div>
+
+    <div class="backdrop">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- TOP BAR -->
+        <header class="top-bar">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="ee-display" style="font-size: 19px; font-weight: 800; letter-spacing: -0.3px;">Easy English</span>
+                <span class="topic-badge" style="background: rgba(99, 102, 241, 0.1); color: #6366F1; border: 1px solid rgba(99, 102, 241, 0.2);">ELITE PRO</span>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="icon-btn" onclick="openDownloadModal()" title="Ilovani offline saqlash / o'rnatish">
+                    <i data-lucide="download" style="width: 18px; color: #6366F1;"></i>
+                </button>
+                <button class="icon-btn" onclick="toggleTheme()" id="theme-btn" title="Rejimni o'zgartirish">
+                    <i data-lucide="moon" style="width: 18px;"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- 1. HOME TAB -->
+        <section id="tab-home" class="content-tab active">
+            <div style="margin-bottom: 22px;">
+                <p style="font-size: 13px; color: var(--ee-text-soft); font-weight: 500;">Welcome back 👋</p>
+                <h1 class="ee-display" style="font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-top: 2px;">Master Your English</h1>
+            </div>
+
+            <div class="glass-card no-hover" style="background: var(--ee-hero-bg); color: white; margin-bottom: 20px; padding: 26px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); transition: background 0.4s;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <p style="font-size: 12px; opacity: 0.9; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Current streak</p>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+                            <i data-lucide="flame" style="fill: #FDE047; color: #FDE047; width: 28px; height: 28px;"></i>
+                            <span class="ee-display" id="home-streak" style="font-size: 32px; font-weight: 800;">0</span>
+                            <span style="opacity: 0.9; font-size: 15px; font-weight: 500;">days</span>
+                        </div>
+                    </div>
+                    <div style="text-align: right; background: rgba(255,255,255,0.12); padding: 12px 18px; border-radius: 18px; backdrop-filter: blur(10px);">
+                        <p style="font-size: 11px; opacity: 0.9; font-weight: 600; text-transform: uppercase;">Learned</p>
+                        <span class="ee-display" id="home-words" style="font-size: 22px; font-weight: 800; display: block; margin-top: 2px;">0 words</span>
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px; margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.25);">
+                    <i data-lucide="trophy" style="width:14px; height:14px;"></i>
+                    <span id="home-xp" style="font-size:12px; opacity:0.95; font-weight:600;">0 XP o'yinlardan</span>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="glass-card" onclick="switchTab('vocab')">
+                    <div style="width: 46px; height: 46px; background: rgba(139, 92, 246, 0.12); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px;">
+                        <i data-lucide="layers" style="color: var(--ee-vocab-col); width: 22px;"></i>
+                    </div>
+                    <h3 class="ee-display" style="font-size: 15px; font-weight: 700;">Vocabulary</h3>
+                    <p style="font-size: 12px; color: var(--ee-text-soft); margin-top: 4px; font-weight: 500;">10 topics + game</p>
+                </div>
+                <div class="glass-card" onclick="switchTab('reading')">
+                    <div style="width: 46px; height: 46px; background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px;">
+                        <i data-lucide="book-open" style="color: var(--ee-read-col); width: 22px;"></i>
+                    </div>
+                    <h3 class="ee-display" style="font-size: 15px; font-weight: 700;">Reading</h3>
+                    <p style="font-size: 12px; color: var(--ee-text-soft); margin-top: 4px; font-weight: 500;">24 interactive tests</p>
+                </div>
+                <div class="glass-card" onclick="switchTab('speaking')">
+                    <div style="width: 46px; height: 46px; background: rgba(249, 115, 22, 0.12); border: 1px solid rgba(249, 115, 22, 0.25); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px;">
+                        <i data-lucide="mic" style="color: var(--ee-speak-col); width: 22px;"></i>
+                    </div>
+                    <h3 class="ee-display" style="font-size: 15px; font-weight: 700;">Speaking</h3>
+                    <p style="font-size: 12px; color: var(--ee-text-soft); margin-top: 4px; font-weight: 500;">Part 1 & 2 simulator</p>
+                </div>
+                <div class="glass-card" onclick="switchTab('writing')">
+                    <div style="width: 46px; height: 46px; background: rgba(236, 72, 153, 0.12); border: 1px solid rgba(236, 72, 153, 0.25); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px;">
+                        <i data-lucide="pen-line" style="color: var(--ee-write-col); width: 22px;"></i>
+                    </div>
+                    <h3 class="ee-display" style="font-size: 15px; font-weight: 700;">Writing</h3>
+                    <p style="font-size: 12px; color: var(--ee-text-soft); margin-top: 4px; font-weight: 500;">Phrases & essays</p>
+                </div>
+            </div>
+
+            <div class="glass-card" onclick="switchTab('add')" style="margin-top: 16px; display:flex; align-items:center; gap:14px;">
+                <div style="width: 42px; height: 42px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink:0;">
+                    <i data-lucide="upload" style="color: var(--ee-add-col); width: 20px;"></i>
+                </div>
+                <div>
+                    <h3 class="ee-display" style="font-size: 14.5px; font-weight: 700;">O'z materialingizni qo'shing</h3>
+                    <p style="font-size: 12px; color: var(--ee-text-soft); margin-top: 2px; font-weight: 500;">Lug'at, reading yoki writing — o'zingiznikini yuklang</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. VOCAB TAB -->
+        <section id="tab-vocab" class="content-tab">
+            <div id="vocab-content"></div>
+        </section>
+
+        <!-- 3. READING TAB -->
+        <section id="tab-reading" class="content-tab">
+            <div id="reading-content"></div>
+        </section>
+
+        <!-- 4. SPEAKING TAB -->
+        <section id="tab-speaking" class="content-tab">
+            <div id="speaking-content"></div>
+        </section>
+
+        <!-- 5. WRITING TAB -->
+        <section id="tab-writing" class="content-tab">
+            <div id="writing-content"></div>
+        </section>
+
+        <!-- 6. ADD / UPLOAD TAB -->
+        <section id="tab-add" class="content-tab">
+            <div id="add-content"></div>
+        </section>
+
+        <!-- BOTTOM NAV -->
+        <nav class="bottom-nav">
+            <button class="nav-item active home-nav" onclick="switchTab('home')" data-tab="home">
+                <div class="nav-icon-wrap"><i data-lucide="home" style="width: 18px;"></i></div>
+                <span>Home</span>
+            </button>
+            <button class="nav-item vocab-nav" onclick="switchTab('vocab')" data-tab="vocab">
+                <div class="nav-icon-wrap"><i data-lucide="layers" style="width: 18px;"></i></div>
+                <span>Vocab</span>
+            </button>
+            <button class="nav-item read-nav" onclick="switchTab('reading')" data-tab="reading">
+                <div class="nav-icon-wrap"><i data-lucide="book-open" style="width: 18px;"></i></div>
+                <span>Reading</span>
+            </button>
+            <button class="nav-item speak-nav" onclick="switchTab('speaking')" data-tab="speaking">
+                <div class="nav-icon-wrap"><i data-lucide="mic" style="width: 18px;"></i></div>
+                <span>Speak</span>
+            </button>
+            <button class="nav-item write-nav" onclick="switchTab('writing')" data-tab="writing">
+                <div class="nav-icon-wrap"><i data-lucide="pen-line" style="width: 18px;"></i></div>
+                <span>Writing</span>
+            </button>
+            <button class="nav-item add-nav" onclick="switchTab('add')" data-tab="add">
+                <div class="nav-icon-wrap"><i data-lucide="plus" style="width: 18px;"></i></div>
+                <span>Add</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- DOWNLOAD / INSTALL MODAL -->
+    <div class="modal-overlay" id="downloadModal">
+        <div class="glass-card modal-card static">
+            <button onclick="closeDownloadModal()" style="position: absolute; top: 16px; right: 16px; background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.2); border-radius: 50%; width: 34px; height: 34px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                <i data-lucide="x" style="width: 16px; color: var(--ee-text);"></i>
+            </button>
+            <h3 class="ee-display" style="font-size: 19px; font-weight: 700; margin-bottom: 6px;">Ilovani o'rnatish</h3>
+            <p id="dlSubtitle" style="font-size: 13px; color: var(--ee-text-soft); margin-bottom: 22px; font-weight: 500;">Bosh ekranga qo'shing va internetsiz ham foydalaning</p>
+
+            <button id="startDlBtn" onclick="startDownload()" style="width: 100%; background: linear-gradient(135deg, #3B82F6, #6366F1); color: white; border: none; padding: 15px; border-radius: 16px; font-weight: 700; font-family: 'Outfit', sans-serif; font-size: 14px; cursor: pointer; box-shadow: 0 10px 25px rgba(99,102,241,0.3);">
+                Bosh ekranga qo'shish
+            </button>
+
+            <div id="dlProgressBox" style="display: none; align-items: center; flex-direction: column;">
+                <div class="circle-progress">
+                    <svg viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="42" class="circle-bg"></circle>
+                        <circle cx="50" cy="50" r="42" class="circle-bar" id="dlCircle"></circle>
+                    </svg>
+                    <div id="dlText" class="ee-display" style="position: absolute; font-size: 16px; font-weight: 700;">0%</div>
+                </div>
+                <p id="dlStatus" style="font-size: 13px; font-weight: 700; margin-top: 10px;">Fayllar keshlanmoqda...</p>
+                <button id="dlDoneBtn" onclick="closeDownloadModal()" style="display: none; width: 100%; margin-top: 18px; background: rgba(16, 185, 129, 0.15); color: #059669; border: 1px solid rgba(16, 185, 129, 0.3); padding: 12px; border-radius: 14px; font-weight: 700; cursor: pointer;">Tayyor</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
